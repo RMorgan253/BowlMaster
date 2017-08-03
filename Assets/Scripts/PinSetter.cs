@@ -5,6 +5,7 @@ using System.Collections;
 public class PinSetter : MonoBehaviour {
 	public int lastStandingCount = -1;
 	public Text standingDisplay;
+	public float distanceToRaise = 40f;
 
 	private Ball ball;
 	private float lastChangeTime;
@@ -18,11 +19,28 @@ public class PinSetter : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		standingDisplay.text = CountStanding ().ToString();
-
-
 		if (ballEnteredBox){
 			CheckStanding();
 		}
+	}
+
+	public void RaisePins (){
+		//raise standing pins only by distanceToRaise
+		foreach (Pin pin in GameObject.FindObjectsOfType<Pin>()){
+			if (pin.IsStanding()) {
+				pin.transform.Translate (new Vector3 (0, distanceToRaise, 0));
+			}
+		}
+		Debug.Log ("Raising pins");
+	}
+
+	public void LowerPins (){
+		//raise standing pins only by distanceToRaise
+
+	}
+
+	public void RenewPins (){
+		Debug.Log ("Renewing pins");
 	}
 
 	void CheckStanding (){
@@ -35,12 +53,10 @@ public class PinSetter : MonoBehaviour {
 			lastStandingCount = currentStanding;
 			return;
 		}
-
 		float settleTime = 3f;  //How long to wait to consider pins settled
 		if ((Time.time - lastChangeTime) > settleTime) {  // if last change less then 3s ago
 			PinsHaveSettled();
 		}
-
 	}
 
 	void PinsHaveSettled(){
@@ -62,7 +78,6 @@ public class PinSetter : MonoBehaviour {
 
 	void OnTriggerExit (Collider collider) {
 		GameObject thingLeft = collider.gameObject;
-
 		if (thingLeft.GetComponent<Pin> ()){
 			Destroy (thingLeft);
 		}
@@ -70,15 +85,10 @@ public class PinSetter : MonoBehaviour {
 
 	void OnTriggerEnter (Collider collider){
 		GameObject thingHit = collider.gameObject;
-
 		// Ball enters play box
-
 		if (thingHit.GetComponent<Ball>()){
 			ballEnteredBox = true;
 			standingDisplay.color = Color.red;
 		}
-
-
 	}
-
 }
